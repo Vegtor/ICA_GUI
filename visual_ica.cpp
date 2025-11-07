@@ -61,7 +61,7 @@ void Visual_ICA::setup()
     }
 
     calculate_fitness();
-    std::sort(population.begin(), population.end(), [](Visual_Country* a, Visual_Country* b)
+    std::sort(population.begin(), population.end(), [](Country* a, Country* b)
         {
             return a->fitness < b->fitness;
         });
