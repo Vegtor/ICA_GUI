@@ -12,7 +12,7 @@ struct Visual_Country_Snapshot
     bool is_emperor;
 };
 
-class Visual_ICA : public Imperialist_Competitive_Algorithm
+class Visual_ICA : public ICA
 {
 private:
     std::vector<std::pair<std::string, std::vector<Visual_Country_Snapshot>>> history;
@@ -22,7 +22,7 @@ private:
     void empire_colouring();
 
 public:
-    using Imperialist_Competitive_Algorithm :: Imperialist_Competitive_Algorithm;
+    Visual_ICA(int pop_size, int dim, int max_iter, double beta, double gamma, double eta, double lb, double ub, const std::function<double(const std::vector<double>&)>& obj_func);
     void setup() override;
     void run() override;
 

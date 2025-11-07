@@ -15,6 +15,7 @@ public:
 	void add_vassal(Country* vassal) override;
 	void add_emperor(Country* emperor) override;
 	void coup(Country* nearest_imperialist) override;
+
 	~Visual_Country() = default;
 };
 

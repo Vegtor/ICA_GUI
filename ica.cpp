@@ -5,14 +5,14 @@
 #include <iostream>
 #include <random>
 
-Imperialist_Competitive_Algorithm::Imperialist_Competitive_Algorithm(
+ICA::ICA(
     int pop_size, int dim, int max_iter,
     double beta, double gamma, double eta,
     double lb, double ub,
     const std::function<double(const std::vector<double>&)>& obj_func
 ): pop_size(pop_size), dim(dim), max_iter(max_iter), beta(beta), gamma(gamma), eta(eta), lb(lb), ub(ub), obj_func(obj_func), best_fitness(INFINITY), tp(-1){}
 
-void Imperialist_Competitive_Algorithm::calculate_fitness()
+void ICA::calculate_fitness()
 {
     for (auto& c : population)
     {
@@ -25,7 +25,7 @@ void Imperialist_Competitive_Algorithm::calculate_fitness()
     }
 }
 
-void Imperialist_Competitive_Algorithm::create_empires()
+void ICA::create_empires()
 {
     int n_empire = static_cast<int>(0.1 * pop_size);
     empires.assign(population.begin(), population.begin() + n_empire);
@@ -36,7 +36,7 @@ void Imperialist_Competitive_Algorithm::create_empires()
     this->tp = total_power;
 }
 
-void Imperialist_Competitive_Algorithm::create_colonies()
+void ICA::create_colonies()
 {
     colonies.assign(population.begin() + empires.size(), population.end());
     std::vector<int> colonies_in_empires(empires.size());
@@ -71,7 +71,7 @@ void Imperialist_Competitive_Algorithm::create_colonies()
     }
 }
 
-void Imperialist_Competitive_Algorithm::assimilation()
+void ICA::assimilation()
 {
     for (auto& colony : colonies)
     {
@@ -92,7 +92,7 @@ void Imperialist_Competitive_Algorithm::assimilation()
     }
 }
 
-void Imperialist_Competitive_Algorithm::revolution()
+void ICA::revolution()
 {
     for (auto& colony : colonies)
     {
@@ -101,7 +101,7 @@ void Imperialist_Competitive_Algorithm::revolution()
     }
 }
 
-void Imperialist_Competitive_Algorithm::mutiny()
+void ICA::mutiny()
 {
     for (Country* colony : colonies)
     {
@@ -144,7 +144,7 @@ void Imperialist_Competitive_Algorithm::mutiny()
     }
 }
 
-void Imperialist_Competitive_Algorithm::imperial_war()
+void ICA::imperial_war()
 {
     std::vector<double> total_power(empires.size());
     double max_power = -INFINITY;
@@ -189,7 +189,7 @@ void Imperialist_Competitive_Algorithm::imperial_war()
     }
 }
 
-void Imperialist_Competitive_Algorithm::setup()
+void ICA::setup()
 {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
@@ -213,7 +213,7 @@ void Imperialist_Competitive_Algorithm::setup()
     create_colonies();
 }
 
-void Imperialist_Competitive_Algorithm::run()
+void ICA::run()
 {
     for (int i = 0; i < max_iter; ++i)
     {
@@ -227,7 +227,7 @@ void Imperialist_Competitive_Algorithm::run()
     }
 }
 
-void Imperialist_Competitive_Algorithm::migrate_best(const std::vector<double>& elite_solution, const std::function<double(const std::vector<double>&)>& obj_func)
+void ICA::migrate_best(const std::vector<double>& elite_solution, const std::function<double(const std::vector<double>&)>& obj_func)
 {
     auto worst = std::max_element(population.begin(), population.end(), [](Country* a, Country* b)
         {
@@ -239,23 +239,23 @@ void Imperialist_Competitive_Algorithm::migrate_best(const std::vector<double>& 
     worst_country->evaluate_fitness(obj_func);
 }
 
-double Imperialist_Competitive_Algorithm::get_fitness()
+double ICA::get_fitness()
 {
     return this->best_fitness;
 }
 
-std::vector<double> Imperialist_Competitive_Algorithm::get_best_solution()
+std::vector<double> ICA::get_best_solution()
 {
     return this->best_solution;
 }
 
-void Imperialist_Competitive_Algorithm::set_max_iter(int max_iter)
+void ICA::set_max_iter(int max_iter)
 {
     this->max_iter = max_iter;
 }
 
 // Not used, just for testing purposes
-void Imperialist_Competitive_Algorithm::check(int rank)
+void ICA::check(int rank)
 {
     for (size_t i = 0; i < colonies.size(); ++i)
     {
@@ -281,7 +281,7 @@ void Imperialist_Competitive_Algorithm::check(int rank)
     }
 }
 
-Imperialist_Competitive_Algorithm::~Imperialist_Competitive_Algorithm()
+ICA::~ICA()
 {
     for (auto c : population) 
         delete c;

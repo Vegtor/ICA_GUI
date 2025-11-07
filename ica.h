@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 
-class Imperialist_Competitive_Algorithm
+class ICA
 {
 protected:
     int pop_size;
@@ -41,7 +41,7 @@ protected:
     void imperial_war();
 public:
     // setup of ICA class
-    Imperialist_Competitive_Algorithm(int pop_size, int dim, int max_iter, double beta, double gamma, double eta, double lb, double ub, const std::function<double(const std::vector<double>&)>& obj_func);
+    ICA(int pop_size, int dim, int max_iter, double beta, double gamma, double eta, double lb, double ub, const std::function<double(const std::vector<double>&)>& obj_func);
 
     // setup of colonies
     virtual void setup();
@@ -61,7 +61,7 @@ public:
 
     void check(int rank);
 
-    ~Imperialist_Competitive_Algorithm();
+    ~ICA();
 };
 
 #endif // ICA_H

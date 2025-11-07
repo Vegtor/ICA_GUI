@@ -1,13 +1,12 @@
 #ifndef PICA_MP_H
 #define PICA_MP_H
 
-#include "strategy.h"
 #include "ica.h"
 #include "visual_ica.h"
 #include <functional>
 #include <vector>
 
-class PICA_MP : public IStrategy
+class PICA_MP
 {
 private:
     int rank;
@@ -15,6 +14,9 @@ private:
     int migration_cycles;
     int iterations_per_cycle;
     int dim;
+
+    ICA* ica;
+    std::function<double(const std::vector<double>&)> obj_func;
 
     void serialize_history(std::vector<double>& buffer);
     std::vector<std::pair<std::string, std::vector<Visual_Country_Snapshot>>> deserialize_history(const std::vector<double>& buffer, int count);
@@ -26,7 +28,7 @@ public:
         const std::function<double(const std::vector<double>&)>& obj_func,
         int migration_cycles, int iterations_per_cycle,
         bool visual);
-    void run() override;
+    void run();
 
     std::vector<std::vector<std::pair<std::string, std::vector<Visual_Country_Snapshot>>>> gather_visualization_history();
     

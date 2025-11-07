@@ -45,6 +45,19 @@ void Visual_ICA::empire_colouring()
     }
 }
 
+Visual_ICA::Visual_ICA(
+    int pop_size, 
+    int dim, 
+    int max_iter, 
+    double beta, 
+    double gamma, 
+    double eta, 
+    double lb, 
+    double ub, 
+    const std::function<double(const std::vector<double>&)>& obj_func)
+    :ICA(pop_size, dim, max_iter, beta, gamma, eta, lb, ub, obj_func)
+{}
+
 void Visual_ICA::setup()
 {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));

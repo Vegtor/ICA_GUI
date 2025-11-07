@@ -18,16 +18,13 @@ PICA_MP::PICA_MP(int pop_size, int dim, int max_iter,
     if(visual)
         this->ica = new Visual_ICA(pop_size, dim, max_iter, beta, gamma, eta, lb, ub, obj_func);
     else
-        this->ica = new Imperialist_Competitive_Algorithm(pop_size, dim, max_iter, beta, gamma, eta, lb, ub, obj_func);
+        this->ica = new ICA(pop_size, dim, max_iter, beta, gamma, eta, lb, ub, obj_func);
     this->ica->setup();
 }
 
 void PICA_MP::serialize_history(std::vector<double>& buffer)
 {
-    auto* visual_ica = dynamic_cast<Visual_ICA*>(ica);
-    if (!visual_ica) 
-        return;
-
+    auto* visual_ica = static_cast<Visual_ICA*>(ica);
     const auto& history = visual_ica->get_history();
     buffer.clear();
     buffer.push_back(static_cast<double>(history.size())); // Number of snapshots
