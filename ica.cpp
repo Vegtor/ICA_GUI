@@ -92,12 +92,43 @@ void ICA::assimilation()
     }
 }
 
+void ICA::assimilation_of_empire(int idx)
+{
+    Country* emperor = empires[idx];
+    for (auto& vassal : emperor->vassals)
+    {
+        double dist = 0;
+
+        for (size_t i = 0; i < dim; ++i)
+            dist += std::pow(emperor->location[i] - vassal->location[i], 2);
+        dist = std::sqrt(dist);
+
+
+        if (dist != 0)
+        {
+            double shift = ((double)rand() / RAND_MAX) * this->beta * dist;
+            for (size_t i = 0; i < dim; ++i)
+                vassal->location[i] += shift * (emperor->location[i] - vassal->location[i]) / dist;
+        }
+    }
+}
+
 void ICA::revolution()
 {
     for (auto& colony : colonies)
     {
         for (size_t i = 0; i < dim; ++i)
             colony->location[i] += ((double)rand() / RAND_MAX) * 2 * gamma - gamma;
+    }
+}
+
+void ICA::revolution_of_empire(int idx)
+{
+    Country* emperor = empires[idx];
+    for (auto& vassal : emperor->vassals)
+    {
+        for (size_t i = 0; i < dim; ++i)
+            vassal->location[i] += ((double)rand() / RAND_MAX) * 2 * gamma - gamma;
     }
 }
 

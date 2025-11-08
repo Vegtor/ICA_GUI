@@ -7,11 +7,20 @@
 #include <functional>
 #include <vector>
 
-class PICA_MS : public Visual_ICA
+struct Mutiny_Action {
+    Country* colony;               
+    Country* new_empire;      
+    bool empire_swap;     
+};
+
+class PICA_MS
 {
 private:
+    ICA* ica;
     std::function<double(const std::vector<double>&)> obj_func;
     int num_threads;
+
+    void mutiny_buffer();
 
 
 public:
@@ -29,9 +38,10 @@ public:
         int num_threads = 4
     );
 
-    void setup() override;
+    void setup();
+    void run();
     
-    ~PICA_MS();
+    ~PICA_MS() = default;
 };
 
 #endif
