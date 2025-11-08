@@ -19,8 +19,10 @@ private:
     ICA* ica;
     std::function<double(const std::vector<double>&)> obj_func;
     int num_threads;
+    bool visual;
 
-    void mutiny_buffer();
+    void mutiny_parallel();
+    void calculate_fitness_parallel();
 
 
 public:
@@ -38,8 +40,10 @@ public:
         int num_threads = 4
     );
 
-    void setup();
-    void run();
+    void setup_parallel();
+    void run_parallel();
+    void run_parallel_visual();
+    void state_snapshot_parallel(std::string phase_name);
     
     ~PICA_MS() = default;
 };

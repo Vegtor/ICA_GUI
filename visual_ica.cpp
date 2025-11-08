@@ -5,15 +5,14 @@
 void Visual_ICA::state_snapshot(std::string phase_name)
 {
     std::vector<Visual_Country_Snapshot> step;
-    for (auto* c : population) {
+    for (auto* c : population) 
+    {
         Visual_Country_Snapshot country_snapshot;
         country_snapshot.position = c->location;
         country_snapshot.is_emperor = (c->vassal_of_empire == nullptr);
 
-        if (auto vc = dynamic_cast<Visual_Country*>(c)) 
-            country_snapshot.colour = vc->get_colour();
-        else 
-            country_snapshot.colour = { 0.0, 0.0, 0.0 }; 
+        auto vc = static_cast<Visual_Country*>(c);
+        country_snapshot.colour = vc->get_colour(); 
 
         step.push_back(std::move(country_snapshot));
     }
@@ -29,17 +28,14 @@ std::vector<double> Visual_ICA::random_colour()
 
 void Visual_ICA::empire_colouring()
 {
-    if (!dynamic_cast<Visual_Country*>(empires.front()))
-        return;
-
     for (auto& e : empires)
     {
-        auto* empire = dynamic_cast<Visual_Country*>(e);
+        auto* empire = static_cast<Visual_Country*>(e);
         std::vector<double> temp_colour = this->random_colour();
         empire->set_colour(temp_colour);
         for (auto& v : e->vassals)
         {
-            auto* vassal = dynamic_cast<Visual_Country*>(v);
+            auto* vassal = static_cast<Visual_Country*>(v);
             vassal->set_colour(temp_colour);
         }
     }
@@ -80,6 +76,7 @@ void Visual_ICA::setup()
         });
     create_empires();
     create_colonies();
+    empire_colouring();
 }
 
 void Visual_ICA::run()

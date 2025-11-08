@@ -5,7 +5,7 @@
 #include <cmath>
 #include <random>
 
-void PICA_MS::setup()
+void PICA_MS::setup_parallel()
 {
     int countries_per_thread = ica->pop_size / num_threads;
     int remainder = ica->pop_size % num_threads;
@@ -33,37 +33,89 @@ void PICA_MS::setup()
     }
 }
 
-void PICA_MS::run()
+void PICA_MS::run_parallel()
 {
-    setup();
-
     for (int iter = 0; iter < ica->max_iter; ++iter) 
     {
-        ica->imperial_war(); 
-        mutiny_buffer();
-        #pragma omp for
-        for (size_t i = 0; i < ica->empires.size(); ++i) 
-        {
-            for (size_t j = 0; j < ica->empires[i]->vassals.size(); ++j)
-                ica->empires[i]->vassals[j]->evaluate_fitness(ica->obj_func);
-        }
-
+        calculate_fitness_parallel();
         #pragma omp for
         for (size_t i = 0; i < ica->empires.size(); ++i)
         {
             ica->assimilation_of_empire(i);
             ica->revolution_of_empire(i);
         }
+        mutiny_parallel();
+        ica->imperial_war();
 
-    ica->calculate_fitness();
-
-    if (ica->empires.size() == 1)
-        break;
+        if (ica->empires.size() == 1)
+            break;
     }
 }
 
+void PICA_MS::run_parallel_visual()
+{
+    for (int iter = 0; iter < ica->max_iter; ++iter)
+    {
+        calculate_fitness_parallel();
 
-void PICA_MS::mutiny_buffer()
+        #pragma omp for
+        for (size_t i = 0; i < ica->empires.size(); ++i)
+        {
+            ica->assimilation_of_empire(i);
+        }
+        state_snapshot_parallel("Assimilation");
+
+        #pragma omp for
+        for (size_t i = 0; i < ica->empires.size(); ++i)
+        {
+            ica->revolution_of_empire(i);
+        }
+        state_snapshot_parallel("Revolution");
+
+        mutiny_parallel();
+        state_snapshot_parallel("Mutiny");
+
+        ica->imperial_war(); 
+        state_snapshot_parallel("Imperial War");
+
+        if (ica->empires.size() == 1)
+            break;
+    }
+}
+
+void PICA_MS::state_snapshot_parallel(std::string phase_name)
+{
+    auto visual_ica = static_cast<Visual_ICA*>(ica);
+    std::vector<Visual_Country_Snapshot> step;
+    #pragma omp parallel
+    {
+        std::vector<Visual_Country_Snapshot> local_step;
+
+        #pragma omp for
+        for (auto* c : visual_ica->population)
+        {
+            Visual_Country_Snapshot country_snapshot;
+            country_snapshot.position = c->location;
+            country_snapshot.is_emperor = (c->vassal_of_empire == nullptr);
+
+            auto vc = static_cast<Visual_Country*>(c);
+            country_snapshot.colour = vc->get_colour();
+
+            local_step.push_back(std::move(country_snapshot));
+        }
+
+        #pragma omp critical
+        {
+            step.insert(step.end(),
+                std::make_move_iterator(local_step.begin()),
+                std::make_move_iterator(local_step.end()));
+        }
+    }
+    visual_ica->history.emplace_back(phase_name, std::move(step));
+}
+
+
+void PICA_MS::mutiny_parallel()
 {
     std::vector<std::vector<Mutiny_Action>> thread_buffers(num_threads);
 
@@ -135,6 +187,20 @@ void PICA_MS::mutiny_buffer()
     }
 }
 
+void PICA_MS::calculate_fitness_parallel()
+{
+    #pragma omp for
+    for (auto& c : ica->population)
+    {
+        c->evaluate_fitness(obj_func);
+        if (c->fitness < ica->best_fitness)
+        {
+            ica->best_fitness = c->fitness;
+            ica->best_solution = c->location;
+        }
+    }
+}
+
 PICA_MS::PICA_MS(
     int pop_size,
     int dim,
@@ -147,7 +213,7 @@ PICA_MS::PICA_MS(
     const std::function<double(const std::vector<double>&)>& obj_func,
     bool visual,
     int num_threads
-) : num_threads(num_threads), obj_func(obj_func)
+) : num_threads(num_threads), obj_func(obj_func), visual(visual)
 {
     if(visual)
         ica = new Visual_ICA(pop_size, dim, max_iter, beta, gamma, eta, lb, ub, obj_func);
