@@ -88,6 +88,8 @@ void Visual_ICA::run()
         state_snapshot("Assimilation");
         revolution();
         state_snapshot("Revolution");
+        if (this->history.size() == 6)
+            int op = 5;
         mutiny();
         state_snapshot("Mutiny");
         imperial_war();

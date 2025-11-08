@@ -169,12 +169,6 @@ void PICA_MP::run()
 
         for (int r = 0; r < size; ++r)
         {
-            if (rank == r) 
-            {
-                std::cerr << "[Cycle " << cycle << "] Rank " << rank
-                    << ": sending to " << next << ", receiving from " << prev
-                    << ", send_solution size = " << send_solution.size() << std::endl;
-            }
             MPI_Barrier(MPI_COMM_WORLD);
         }
 
@@ -214,7 +208,6 @@ void PICA_MP::run()
 
         std::vector<double> global_best(dim);
         std::copy(all_best_solutions.begin() + best_index * dim, all_best_solutions.begin() + (best_index + 1) * dim, global_best.begin());
-        this->print_results(best_fitness, global_best);
     }
 }
 

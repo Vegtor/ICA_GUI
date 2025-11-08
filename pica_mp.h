@@ -27,7 +27,7 @@ public:
         double lb, double ub,
         const std::function<double(const std::vector<double>&)>& obj_func,
         int migration_cycles, int iterations_per_cycle,
-        bool visual);
+        bool visual = false);
     void run();
 
     std::vector<std::vector<std::pair<std::string, std::vector<Visual_Country_Snapshot>>>> gather_visualization_history();

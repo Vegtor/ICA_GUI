@@ -1,7 +1,7 @@
 #include "visual_country.h"
 
 Visual_Country::Visual_Country(const std::vector<double>& loc):
-	Country(loc), colour({-1.0, -1.0, -1,0})
+	Country(loc), colour({-1.0, -1.0, -1.0})
 {}
 
 void Visual_Country::set_colour(std::vector<double>& colour)
@@ -34,5 +34,9 @@ void Visual_Country::coup(Country* nearest_imperialist)
 	auto vc = static_cast<Visual_Country*>(nearest_imperialist);
 	std::vector<double> temp = vc->get_colour();
 	this->set_colour(temp);
-	this->coup(nearest_imperialist);
+
+	this->vassals = nearest_imperialist->vassals;
+	this->add_vassal(nearest_imperialist);
+	nearest_imperialist->add_emperor(this);
+	this->vassal_of_empire = nullptr;
 }
