@@ -1,5 +1,6 @@
 #include "visual_ica.h"
 #include <random>
+#include <ctime>
 
 
 void Visual_ICA::state_snapshot(std::string phase_name)

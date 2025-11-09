@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <random>
+#include <ctime>
 
 ICA::ICA(
     int pop_size, int dim, int max_iter,
